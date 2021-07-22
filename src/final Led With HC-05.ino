@@ -1,164 +1,142 @@
 #define red_pin 9
 #define green_pin 10
 #define blue_pin 11
+#define maxNum 255
 
-int counter, maxNum, color_pin, action_value;
-bool maxDone, next;
-String maxValue, inputBytes, colorName, action;
+int color_pin, action_value, changeValue = 80;
+String inputBytes;
 
 void setup() {
-  pinMode(red_pin, OUTPUT);
-  pinMode(green_pin, OUTPUT);
-  pinMode(blue_pin, OUTPUT);
-  Serial.begin(9600);
+        pinMode(red_pin, OUTPUT);
+        pinMode(green_pin, OUTPUT);
+        pinMode(blue_pin, OUTPUT);
+        Serial.begin(9600);
 }
 
 void loop() {
-  DoneWMaxBrightness();
-
-
-  if (maxDone)
-  {
-
-    ResetValues();
-
-    if (Serial.available())
-    {
-
-      inputBytes = Serial.readString();
-      for (counter = 0; counter < inputBytes.length() ; counter++)
-      {
-        IndentifyInputs();
-      }
-      Serial.println(action_value);
-      Serial.println(color_pin);
-    }
 
 
 
-    analogWrite(color_pin, action_value);
+        if (Serial.available())
+        {
+
+                inputBytes = Serial.readString();
+                if (inputBytes == "red" || inputBytes == "red on" || inputBytes == "red full" || inputBytes == "Red" || inputBytes == "Red on" || inputBytes == "Red full")
+                {
+                        color_pin = red_pin;
+                        action_value = maxNum;
+
+
+                } else if (inputBytes == "lighter red" || inputBytes == "Lighter red" || inputBytes == "more red" || inputBytes == "More red")
+                {
+                        color_pin = red_pin;
+                        action_value = action_value + changeValue;
+                        if(action_value >= maxNum) action_value = maxNum;
+
+
+                } else if (inputBytes == "dimmer red" || inputBytes == "Dimmer red" || inputBytes == "Red dimmer" || inputBytes == "Red less" || inputBytes == "red less")
+                {
+                        Serial.println("dimmer red");
+
+                        color_pin = red_pin;
+                        action_value = action_value - changeValue;
+                        if(action_value <= 0) action_value = 0;
+
+
+                } else if (inputBytes == "red off" || inputBytes == "Red off")
+                {
+                        Serial.println("off");
+
+                        color_pin = red_pin;
+                        action_value = 0;
+
+
+                } else if (inputBytes == "blue" || inputBytes == "blue on" || inputBytes == "blue full" || inputBytes == "Blue" || inputBytes == "Blue on" || inputBytes == "Blue full")
+                {
+                        color_pin = blue_pin;
+                        action_value = maxNum;
+
+
+                } else if (inputBytes == "lighter blue" || inputBytes == "Lighter blue" || inputBytes == "more blue" || inputBytes == "More blue")
+                {
+                        color_pin = blue_pin;
+                        action_value = action_value + changeValue;
+                        if(action_value >= maxNum) action_value = maxNum;
+
+
+                } else if (inputBytes == "dimmer blue" || inputBytes == "Dimmer blue" || inputBytes == "Blue dimmer" || inputBytes == "Blue less" || inputBytes == "blue less")
+                {
+                        color_pin = blue_pin;
+                        action_value = action_value - changeValue;
+                        if(action_value <= 0) action_value = 0;
+
+
+                } else if (inputBytes == "blue off" || inputBytes == "Blue off")
+                {
+                        color_pin = blue_pin;
+                        action_value = 0;
+
+                }else if (inputBytes == "green" || inputBytes == "green on" || inputBytes == "green full" || inputBytes == "Green" || inputBytes == "Green on" || inputBytes == "Green full")
+                {
+                        color_pin = green_pin;
+                        action_value = maxNum;
+
+                } else if (inputBytes == "lighter green" || inputBytes == "Lighter green" || inputBytes == "more green" || inputBytes == "More green")
+                {
+                        color_pin = green_pin;
+                        action_value = action_value + changeValue;
+                        if(action_value >= maxNum) action_value = maxNum;
+
+                } else if (inputBytes == "dimmer green" || inputBytes == "Dimmer green" || inputBytes == "Green dimmer" || inputBytes == "Green less" || inputBytes == "green less")
+                {
+                        color_pin = green_pin;
+                        action_value = action_value - changeValue;
+                        if(action_value <= 0) action_value = 0;
+
+                } else if (inputBytes == "green off" || inputBytes == "Green off")
+                {
+                        color_pin = green_pin;
+                        action_value = 0;
+
+                }else if (inputBytes == "all" || inputBytes == "All" || inputBytes == "on all" || inputBytes == "On all" ||  inputBytes == "all on" ||  inputBytes == "All on")
+                {
+                        action_value = maxNum;
+                        analogWrite(blue_pin, action_value);
+                        analogWrite(green_pin, action_value);
+                        analogWrite(red_pin, action_value);
+
+                } else if (inputBytes == "off all" || inputBytes == "Off all" ||  inputBytes == "all off" ||  inputBytes == "All off")
+                {
+                        action_value = 0;
+                        analogWrite(blue_pin, action_value);
+                        analogWrite(green_pin, action_value);
+                        analogWrite(red_pin, action_value);
+
+                } else if (inputBytes == "brighter" || inputBytes == "Brighter" || inputBytes == "more" || inputBytes == "More" || inputBytes == "Lighter" || inputBytes == "lighter")
+                {
+                        action_value = action_value + changeValue;
+                        if(action_value >= maxNum) action_value = maxNum;
+
+                }else if (inputBytes == "dimmer" || inputBytes == "Dimmer" || inputBytes == "less" || inputBytes == "Less")
+                {
+
+                        action_value = action_value - changeValue;
+                        if(action_value <= 0) action_value = 0;
+
+                }else if (inputBytes == "off" || inputBytes == "Off")
+                {
+                        action_value = 0;
+                }else if (inputBytes == "full" || inputBytes == "Full" || inputBytes == "full brightness" || inputBytes == "Full brightness")
+                {
+                        action_value = maxNum;
+                }
+                Serial.println(action_value);
+                analogWrite(color_pin, action_value);
 
 
 
-  }
 
-}
-
-
-
-void DoneWMaxBrightness()
-{
-  if (!maxDone)
-  {
-    maxValue = Serial.readString();
-    maxNum = maxValue.toInt();
-  }
-  if (maxNum > 1)
-  {
-    maxDone = true;
-  }
-}
-
-
-
-void ResetValues() {
-  colorName = "";
-  action = "";
-  next = false;
-}
-
-
-void IndentifyInputs()
-{
-
-  if (isSpace(inputBytes[0]))
-  {
-    //todo make it continue if after it is smth valid
-    return;
-  }
-  else if (isSpace(inputBytes[counter]))
-  {
-    next = true;
-  }
-
-  else if (isAlpha(inputBytes[counter]))
-  {
-    if (!next)
-    {
-      colorName += (char)inputBytes[counter];
-      SortColor(colorName);
-    }
-    else if (next)
-    {
-      action += (char)inputBytes[counter];
-      MakeAction(action);
-    }
-
-  }
-
-}
-
-
-
-int SortColor(String colorName)
-{
-
-  colorName.toLowerCase();
-
-  switch (colorName) {
-    case "red":
-      print("tset");
-      break;
-
-      case "red":
-        print("tset");
-        break;
-  }
-
-  if (colorName == "red")
-  {
-    color_pin = red_pin;
-
-  } else if (colorName == "green")
-  {
-    color_pin = green_pin;
-
-  } else if (colorName == "blue")
-  {
-    color_pin = blue_pin;
-
-  }else   color_pin = 0;
-//todo: map the value 255 max
-
-}
-
-
-
-int MakeAction(String action)
-{
-
-  action.toLowerCase();
-
-  if (action == "on")
-  {
-    action_value = maxNum;
-
-  } else if (action == "off")
-  {
-    action_value = 0;
-
-  } else if (action == "lighter")
-  {
-    action_value = analogRead(color_pin) + 15;
-    if (action_value >= maxNum)   { action_value = maxNum; }
-
-  } else if (action == "dimmer")
-  {
-    Serial.println("y");
-    action_value = analogRead(color_pin) - 15;
-    if (action_value <= 0)  { action_value = 0; }
-
-  } else   action_value = 0;
+        }
 
 
 
